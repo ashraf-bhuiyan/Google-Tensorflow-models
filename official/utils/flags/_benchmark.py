@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Flags for benchmarking models."""
 
 from absl import flags
 
@@ -19,6 +20,18 @@ from official.utils.flags._conventions import help_wrap
 
 
 def define_benchmark(benchmark_log_dir=True, bigquery_uploader=True):
+  """Register benchmarking flags.
+
+  Args:
+    benchmark_log_dir: Create a flag to specify location for benchmark logging.
+    bigquery_uploader: Create flags for uploading results to BigQuery.
+
+  Returns:
+    A list of flags for core.py to marks as key flags.
+  """
+
+  key_flags = []
+
   if benchmark_log_dir:
     flags.DEFINE_string(
         name="benchmark_log_dir", short_name="bld", default=None,
@@ -46,3 +59,5 @@ def define_benchmark(benchmark_log_dir=True, bigquery_uploader=True):
         default="benchmark_metric",
         help=help_wrap("The Bigquery table name where the benchmark metric "
                        "information will be uploaded."))
+
+    return key_flags

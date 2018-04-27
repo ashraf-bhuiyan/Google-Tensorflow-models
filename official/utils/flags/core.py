@@ -12,27 +12,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Public interface for flag definition."""
 
 from absl import flags
 
 from official.utils.flags import _base
+from official.utils.flags import _benchmark
 from official.utils.flags import _misc
 from official.utils.flags import _performance
 
 
-def define_base(*args, **kwargs):
-  key_flags = _base.define_base(*args, **kwargs)
-  [flags.declare_key_flag(fl) for fl in key_flags]
+def define_in_core(f):
+  """Defines a function in core.py, and registers it's key flags.
+
+  Args:
+    f:  The function to be wrapped
+
+  Returns:
+    The "core-defined" version of the input function.
+  """
+
+  def core_fn(*args, **kwargs):
+    key_flags = f(*args, **kwargs)
+    [flags.declare_key_flag(fl) for fl in key_flags]  # pylint: disable=expression-not-assigned
+  return core_fn
 
 
-def define_image(*args, **kwargs):
-  key_flags = _misc.define_image(*args, **kwargs)
-  [flags.declare_key_flag(fl) for fl in key_flags]
+define_base = define_in_core(_base.define_base)
+define_benchmark = define_in_core(_benchmark.define_benchmark)
+define_image = define_in_core(_misc.define_image)
+define_performance = define_in_core(_performance.define_performance)
 
-
-def define_performance(*args, **kwargs):
-  key_flags = _performance.define_performance(*args, **kwargs)
-  [flags.declare_key_flag(fl) for fl in key_flags]
 
 get_tf_dtype = _performance.get_tf_dtype
 get_loss_scale = _performance.get_loss_scale

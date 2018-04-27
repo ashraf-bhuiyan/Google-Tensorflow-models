@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Flags which will be nearly universal across models."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from absl import flags
 
@@ -20,19 +25,36 @@ from official.utils.logs import hooks_helper
 
 
 DEFAULTS = {
-  "data_dir": "/tmp",
-  "model_dir": "/tmp",
-  "train_epochs": 1,
-  "epochs_between_evals": 1,
-  "stop_threshold": None,
-  "batch_size": 32,
-  "hooks": "LoggingTensorHook",
+    "data_dir": "/tmp",
+    "model_dir": "/tmp",
+    "train_epochs": 1,
+    "epochs_between_evals": 1,
+    "stop_threshold": None,
+    "batch_size": 32,
+    "hooks": "LoggingTensorHook",
 }
 
 
 def define_base(data_dir=True, model_dir=True, train_epochs=True,
-    epochs_between_evals=True, stop_threshold=True, batch_size=True,
-    multi_gpu=True, hooks=True):
+                epochs_between_evals=True, stop_threshold=True, batch_size=True,
+                multi_gpu=True, hooks=True, export_dir=True):
+  """Register base flags.
+
+  Args:
+    data_dir: Create a flag for specifying the input data directory.
+    model_dir: Create a flag for specifying the model file directory.
+    train_epochs: Create a flag to specify the number of training epochs.
+    epochs_between_evals: Create a flag to specify the frequency of testing.
+    stop_threshold: Create a flag to specify a threshold accuracy or other
+      eval metric which should trigger the end of training.
+    batch_size: Create a flag to specify the batch size.
+    multi_gpu: Create a flag to allow the use of all available GPUs.
+    hooks: Create a flag to specify hooks for logging.
+    export_dir: Create a flag to specify where a SavedModel should be exported.
+
+  Returns:
+    A list of flags for core.py to marks as key flags.
+  """
   key_flags = []
 
   if data_dir:
@@ -85,18 +107,27 @@ def define_base(data_dir=True, model_dir=True, train_epochs=True,
     # Construct a pretty summary of hooks.
     pad_len = max([len(i) for i in hooks_helper.HOOKS_ALIAS.values()]) + 6
     hook_list_str = (
-        "\u180E  {}Abbreviation\n".format("Hook".ljust(pad_len)) + "\n".join(
-        ["\u180E    {}({})".format(value.ljust(pad_len), key) for key, value
-         in hooks_helper.HOOKS_ALIAS.items()]))
+        u"\ufeff  {}Abbreviation\n".format("Hook".ljust(pad_len)) + u"\n".join([
+            u"\ufeff    {}({})".format(value.ljust(pad_len), key) for key, value
+            in hooks_helper.HOOKS_ALIAS.items()]))
     flags.DEFINE_list(
         name="hooks", short_name="hk", default=DEFAULTS["hooks"],
         help=help_wrap(
-            "A comma separated list of (case insensitive) strings to specify "
-            "the names of training hooks.\n{}\n\u180E  "
-            "Example: `--hooks ProfilerHook,ExamplesPerSecondHook`\n\u180E  "
-            "(or)     `-hk p,eps`\nSee official.utils.logs.hooks_helper for "
-            "details.".format(hook_list_str))
+            u"A comma separated list of (case insensitive) strings to specify "
+            u"the names of training hooks.\n{}\n\ufeff  "
+            u"Example: `--hooks ProfilerHook,ExamplesPerSecondHook`\n\ufeff  "
+            u"(or)     `-hk p,eps`\nSee official.utils.logs.hooks_helper for "
+            u"details.".format(hook_list_str))
     )
     key_flags.append("hooks")
+
+  if export_dir:
+    flags.DEFINE_string(
+        name="export_dir", short_name="ed", default=None,
+        help=help_wrap("If set, a SavedModel serialization of the model will "
+                       "be exported to this directory at the end of training. "
+                       "See the README for more details and relevant links.")
+    )
+    key_flags.append("export_dir")
 
   return key_flags

@@ -12,21 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Central location for shared arparse convention definitions."""
 
 import functools
 
-import absl.app
 from absl import flags
+import absl.app
 
-help_wrap = functools.partial(flags.text_wrap, length=80, indent="  ",
+
+help_wrap = functools.partial(flags.text_wrap, length=80, indent="",
                               firstline_indent="\n")
+
 
 class HelpOneLetter(absl.app.HelpFlag):
   """-h is an alias for --help."""
-  NAME = 'h'
+  NAME = "h"
   SHORT_NAME = None
 
+
 flags.DEFINE_flag(HelpOneLetter())
+
 
 def to_choices_str(choices):
   return "(choices: {})".format(", ".join([str(i) for i in choices]))

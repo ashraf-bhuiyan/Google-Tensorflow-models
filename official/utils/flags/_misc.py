@@ -12,14 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Misc flags."""
 
 from absl import flags
 
-from official.utils.flags._conventions import to_choices_str
 from official.utils.flags._conventions import help_wrap
+from official.utils.flags._conventions import to_choices_str
 
 
 def define_image(data_format=True):
+  """Register image specific flags.
+
+  Args:
+    data_format: Create a flag to specify image axis convention.
+
+  Returns:
+    A list of flags for core.py to marks as key flags.
+  """
+
   key_flags = []
 
   if data_format:
@@ -35,22 +45,7 @@ def define_image(data_format=True):
     key_flags.append("data_format")
 
     @flags.validator("data_format")
-    def _check_data_format(data_format):
+    def _check_data_format(data_format):  # pylint: disable=unused-variable
       return data_format in choices or data_format is None
-
-  return key_flags
-
-
-def define_export(export_dir=True):
-  key_flags = []
-
-  if export_dir:
-    flags.DEFINE_string(
-        name="export_dir", short_name="ed", default=None,
-        help=help_wrap("If set, a SavedModel serialization of the model will "
-                       "be exported to this directory at the end of training. "
-                       "See the README for more details and relevant links.")
-    )
-    key_flags.append("export_dir")
 
   return key_flags

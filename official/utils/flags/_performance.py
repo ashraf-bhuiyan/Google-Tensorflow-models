@@ -12,20 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Register flags for optimizing performance."""
 
 import multiprocessing
 
-from absl import flags
-import tensorflow as tf
+from absl import flags    # pylint: disable=g-bad-import-order
+import tensorflow as tf   # pylint: disable=g-bad-import-order
 
-from official.utils.flags._conventions import to_choices_str
 from official.utils.flags._conventions import help_wrap
+from official.utils.flags._conventions import to_choices_str
 
 
 # Map string to (TensorFlow dtype, default loss scale)
 DTYPE_MAP = {
-  "fp16": (tf.float16, 128),
-  "fp32": (tf.float32, 1),
+    "fp16": (tf.float16, 128),
+    "fp32": (tf.float32, 1),
 }
 
 
@@ -41,6 +42,21 @@ def get_loss_scale():
 
 def define_performance(num_parallel_calls=True, inter_op=True, intra_op=True,
                        synthetic_data=True, max_train_steps=True, dtype=True):
+  """Register flags for specifying performance tuning arguments.
+
+  Args:
+    num_parallel_calls: Create a flag to specify parallelism of data loading.
+    inter_op: Create a flag to allow specification of inter op threads.
+    intra_op: Create a flag to allow specification of intra op threads.
+    synthetic_data: Create a flag to allow the use of synthetic data.
+    max_train_steps: Create a flags to allow specification of maximum number
+      of training steps
+    dtype: Create flags for specifying dtype.
+
+  Returns:
+    A list of flags for core.py to marks as key flags.
+  """
+
   key_flags = []
   if num_parallel_calls:
     flags.DEFINE_integer(
@@ -88,13 +104,7 @@ def define_performance(num_parallel_calls=True, inter_op=True, intra_op=True,
         help=help_wrap("The TensorFlow datatype used for calculations. "
                        "Variables may be cast to a higher precision on a "
                        "case-by-case basis for numerical stability.\n{}".format(
-            to_choices_str(DTYPE_MAP.keys()))))
-
-    @flags.validator(flag_name="dtype", message="Valid dtypes: {}"
-                     .format(to_choices_str(DTYPE_MAP.keys())))
-    def _check_dtype(dtype):
-      if dtype in DTYPE_MAP:
-        return True
+                           to_choices_str(DTYPE_MAP.keys()))))
 
     flags.DEFINE_integer(
         name="loss_scale", short_name="ls", default=None,
@@ -108,9 +118,15 @@ def define_performance(num_parallel_calls=True, inter_op=True, intra_op=True,
             "gradients from underflowing to zero. If not provided the default "
             "for fp16 is 128 and 1 for all other dtypes."))
 
-    @flags.validator(flag_name="loss_scale", message="loss_scale should be a "
-                                                     "positive integer.")
-    def _check_loss_scale(loss_scale):
+    @flags.validator(flag_name="dtype", message="Valid dtypes: {}"
+                     .format(to_choices_str(DTYPE_MAP.keys())))
+    def _check_dtype(dtype):  # pylint: disable=unused-variable
+      if dtype in DTYPE_MAP:
+        return True
+
+    @flags.validator(flag_name="loss_scale",
+                     message="loss_scale should be a positive integer.")
+    def _check_loss_scale(loss_scale):  # pylint: disable=unused-variable
       if loss_scale is None:
         return True  # null case is handled elsewhere
 
