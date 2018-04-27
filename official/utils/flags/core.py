@@ -12,18 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Public interface for flag definition."""
+"""Public interface for flag definition.
+
+See _example.py for detailed instructions on defining flags.
+"""
 
 from absl import flags
 
 from official.utils.flags import _base
 from official.utils.flags import _benchmark
+from official.utils.flags import _example
 from official.utils.flags import _misc
 from official.utils.flags import _performance
 
 
 def define_in_core(f):
   """Defines a function in core.py, and registers it's key flags.
+
+  absl uses the location of a flags.declare_key_flag() to determine the context
+  in which a flag is key. By making all declares in core, this allows model
+  main functions to call flags.adopt_module_key_flags() on core and correctly
+  chain key flags.
 
   Args:
     f:  The function to be wrapped
@@ -40,6 +49,7 @@ def define_in_core(f):
 
 define_base = define_in_core(_base.define_base)
 define_benchmark = define_in_core(_benchmark.define_benchmark)
+define_example = define_in_core(_example.define_example)
 define_image = define_in_core(_misc.define_image)
 define_performance = define_in_core(_performance.define_performance)
 

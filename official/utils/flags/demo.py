@@ -18,14 +18,12 @@ from absl import flags
 
 from official.utils.flags import core as flags_core
 
-# TODO(robieta@): remove once real examples exist.
 
-flags_core.define_base()
-flags_core.define_performance()
-flags_core.define_image()
+flags_core.define_example()
 flags.adopt_module_key_flags(flags_core)
 
 def main(_):
-  print(flags.FLAGS.hooks)
+  print(flags.FLAGS.foo)
+  print(flags.FLAGS.bar)
 
 absl.app.run(main)
