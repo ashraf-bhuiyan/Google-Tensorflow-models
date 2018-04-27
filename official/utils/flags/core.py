@@ -13,17 +13,26 @@
 # limitations under the License.
 # ==============================================================================
 
-import absl.flags
+from absl import flags
 
 from official.utils.flags import _base
+from official.utils.flags import _misc
 from official.utils.flags import _performance
 
 
 def define_base(*args, **kwargs):
   key_flags = _base.define_base(*args, **kwargs)
-  [absl.flags.declare_key_flag(fl) for fl in key_flags]
+  [flags.declare_key_flag(fl) for fl in key_flags]
+
+
+def define_image(*args, **kwargs):
+  key_flags = _misc.define_image(*args, **kwargs)
+  [flags.declare_key_flag(fl) for fl in key_flags]
 
 
 def define_performance(*args, **kwargs):
   key_flags = _performance.define_performance(*args, **kwargs)
-  [absl.flags.declare_key_flag(fl) for fl in key_flags]
+  [flags.declare_key_flag(fl) for fl in key_flags]
+
+get_tf_dtype = _performance.get_tf_dtype
+get_loss_scale = _performance.get_loss_scale

@@ -15,7 +15,18 @@
 
 import functools
 
-import absl.flags
+import absl.app
+from absl import flags
 
-help_wrap = functools.partial(absl.flags.text_wrap, length=100, indent="  ",
+help_wrap = functools.partial(flags.text_wrap, length=80, indent="  ",
                               firstline_indent="\n")
+
+class HelpOneLetter(absl.app.HelpFlag):
+  """-h is an alias for --help."""
+  NAME = 'h'
+  SHORT_NAME = None
+
+flags.DEFINE_flag(HelpOneLetter())
+
+def to_choices_str(choices):
+  return "(choices: {})".format(", ".join([str(i) for i in choices]))

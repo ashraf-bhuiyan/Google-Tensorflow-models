@@ -14,15 +14,18 @@
 # ==============================================================================
 
 import absl.app
-import absl.flags
+from absl import flags
 
-from official.utils.flags import core
+from official.utils.flags import core as flags_core
 
-core.define_base()
-core.define_performance()
-absl.flags.adopt_module_key_flags(core)
+# TODO(robieta@): remove once real examples exist.
+
+flags_core.define_base()
+flags_core.define_performance()
+flags_core.define_image()
+flags.adopt_module_key_flags(flags_core)
 
 def main(_):
-  pass
+  print(flags.FLAGS.hooks)
 
 absl.app.run(main)
