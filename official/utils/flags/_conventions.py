@@ -14,17 +14,21 @@
 # ==============================================================================
 """Central location for shared arparse convention definitions."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import functools
 
+from absl import app as absl_app
 from absl import flags
-import absl.app
 
 
 help_wrap = functools.partial(flags.text_wrap, length=80, indent="",
                               firstline_indent="\n")
 
 
-class HelpOneLetter(absl.app.HelpFlag):
+class HelpOneLetter(absl_app.HelpFlag):
   """-h is an alias for --help."""
   NAME = "h"
   SHORT_NAME = None

@@ -12,8 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Example of flag use."""
 
-import absl.app
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from absl import app as absl_app
 from absl import flags
 
 from official.utils.flags import core as flags_core
@@ -22,8 +27,10 @@ from official.utils.flags import core as flags_core
 flags_core.define_example()
 flags.adopt_module_key_flags(flags_core)
 
+
 def main(_):
   print(flags.FLAGS.foo)
   print(flags.FLAGS.bar)
 
-absl.app.run(main)
+if __name__ == "__main__":
+  absl_app.run(main)

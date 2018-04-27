@@ -14,6 +14,10 @@
 # ==============================================================================
 """A detailed example of how to create a flag definition function."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from absl import flags
 
 from official.utils.flags._conventions import help_wrap
